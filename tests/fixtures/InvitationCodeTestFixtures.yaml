@@ -1,0 +1,5 @@
+\App\Entity\InvitationCode:
+    code:
+        code: '12345'
+        description: 'Description unique test'
+        expired_at: <date_create()>
