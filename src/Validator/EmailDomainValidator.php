@@ -20,8 +20,7 @@ final class EmailDomainValidator extends ConstraintValidator
             if (str_contains($value, $blockedDomain)) {
                 $this->context->buildViolation($constraint->message)
                     ->setParameter('{{ value }}', $value)
-                    ->addViolation()
-                ;
+                    ->addViolation();
             }
         }
     }
