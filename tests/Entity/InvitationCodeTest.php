@@ -8,6 +8,7 @@ use DateTimeInterface;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class InvitationCodeTest extends KernelTestCase
@@ -42,9 +43,14 @@ class InvitationCodeTest extends KernelTestCase
     {
         /** @var ValidatorInterface $validator */
         $validator = static::getContainer()->get('validator');
-        $result = $validator->validate($entity);
+        /** @var ConstraintViolation[] $results */
+        $errors = $validator->validate($entity);
+        $messages = [];
+        foreach ($errors as $error) {
+            $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
+        }
 
-        $this->assertCount($expectedCount, $result);
+        $this->assertCount($expectedCount, $errors, implode(', ', $messages));
     }
 
     public function testValidEntity()
