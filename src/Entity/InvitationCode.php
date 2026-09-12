@@ -18,7 +18,9 @@ class InvitationCode
     private ?string $description = null;
 
     #[ORM\Column(length: 5)]
-    #[Assert\Length(exactly: 5, exactMessage: 'Must be exactly {{ limit }} characters')]
+    #[Assert\NotBlank(message: 'The code cannot be empty')]
+    #[Assert\Length(exactly: 5, exactMessage: 'Must be exactly 5 characters')]
+    #[Assert\Regex(pattern: "/^\d+$/", message: 'Must contains only numbers')]
     private ?string $code = null;
 
     #[ORM\Column]

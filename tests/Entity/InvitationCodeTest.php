@@ -45,7 +45,16 @@ class InvitationCodeTest extends KernelTestCase
     public function testInvalidEntity()
     {
         $code = $this->getEntity('123456', 'Description faux test');
-
         $this->assertHasErrors(1, $code);
+
+        $code = $this->getEntity('1234o', 'Description faux test');
+        $this->assertHasErrors(1, $code);
+    }
+
+    public function testInvalidBlankCodeEntity()
+    {
+        $code = $this->getEntity('', 'Description blank test');
+
+        $this->assertHasErrors(2, $code);
     }
 }
