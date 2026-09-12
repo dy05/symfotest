@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\InvitationCodeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: InvitationCodeRepository::class)]
 class InvitationCode
@@ -17,6 +18,7 @@ class InvitationCode
     private ?string $description = null;
 
     #[ORM\Column(length: 5)]
+    #[Assert\Length(exactly: 5, exactMessage: 'Must be exactly {{ limit }} characters')]
     private ?string $code = null;
 
     #[ORM\Column]
