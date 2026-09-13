@@ -16,12 +16,11 @@ final class EmailDomainValidator extends ConstraintValidator
             return;
         }
 
-        foreach ($constraint->blockedDomains as $blockedDomain) {
-            if (str_contains($value, $blockedDomain)) {
-                $this->context->buildViolation($constraint->message)
-                    ->setParameter('{{ value }}', $value)
-                    ->addViolation();
-            }
+        $domain = substr($value, strpos($value, '@') + 1);
+        if (in_array($domain, $constraint->blockedDomains)) {
+            $this->context->buildViolation($constraint->message)
+                ->setParameter('{{ value }}', $value)
+                ->addViolation();
         }
     }
 }
