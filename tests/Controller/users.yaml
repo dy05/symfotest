@@ -1,0 +1,12 @@
+\App\Entity\User:
+    user_test:
+        email: 'test\@test.com'
+        password: '\$2y\$10\$OpJ5bDGnn2uc8.JPob/Ey.HmMDCDV5zPuUd1x1CAHqgeSeM/mIyhu'
+#        password: 'password'
+        roles: "[]"
+    user_admin:
+        email: 'admin\@test.com'
+        password: '\$2y\$10\$OpJ5bDGnn2uc8.JPob/Ey.HmMDCDV5zPuUd1x1CAHqgeSeM/mIyhu'
+#        password: 'password'
+        roles: "[ROLE_ADMIN]"
+
