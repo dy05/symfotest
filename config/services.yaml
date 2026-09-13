@@ -24,4 +24,6 @@ services:
 
     App\Validator\EmailDomainValidator:
         class: App\Validator\EmailDomainValidator
+        arguments:
+            $globalBlockedDomains: 'obbydev.com,test.com'
 

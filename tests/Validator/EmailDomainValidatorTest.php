@@ -122,7 +122,7 @@ class EmailDomainValidatorTest extends ConstraintValidatorTestCase
     public function testAllowedDomainFromDatabase()
     {
         $constraint = new EmailDomain([]);
-        $this->useStrictRepository([]);
+        $this->useStrictRepository();
         $this->validator->validateInContext('obbyto@yahmo.com', $constraint, $this->context);
 
         $this->assertNoViolation();

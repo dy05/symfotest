@@ -75,7 +75,7 @@ class InvitationCodeTest extends KernelTestCase
         $this->assertHasErrors(2, $code);
     }
 
-    public function testInvalideUsedCodeEntity()
+    public function testInvalidUsedCodeEntity()
     {
         $this->databaseTool->loadAliceFixture([
             dirname(__DIR__) . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'InvitationCodeTestFixtures.yaml',

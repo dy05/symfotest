@@ -2,7 +2,6 @@
 
 namespace App\Tests\Repository;
 
-use App\DataFixtures\UserFixtures;
 use App\Repository\UserRepository;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
