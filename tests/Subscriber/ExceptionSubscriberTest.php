@@ -77,8 +77,8 @@ class ExceptionSubscriberTest extends TestCase
             ->method('send')
             ->with(
                 $this->callback(function (Email $message) {
-                    return str_contains($message->getHtmlBody(), ExceptionEvent::class)
-                        && str_contains($message->getHtmlBody(), static::class)
+                    return strpos($message->getHtmlBody(), static::class)
+                        && strpos($message->getHtmlBody(), 'You have a new Exception')
                         && 'New Exception' === $message->getSubject();
                 })
             );
@@ -96,7 +96,7 @@ class ExceptionSubscriberTest extends TestCase
         $kernel->expects($this->never())
             ->method('boot');
 
-        $event = new ExceptionEvent($kernel, new Request(), 1, new Exception());
+        $event = new ExceptionEvent($kernel, new Request(), 1, new Exception('You have a new Exception.'));
 
         $subscriber = new ExceptionSubscriber($mailer, 'from@mailer.com', 'to@mailer.com');
 //        $subscriber->onException($event);
