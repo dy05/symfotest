@@ -19,7 +19,16 @@ class EmailDomainValidatorTest extends ConstraintValidatorTestCase
      */
     public function getValidator(array $blockedDomains = [], bool $expectViolation = false): array
     {
-        $validator = new EmailDomainValidator($this->getConfigRepository($blockedDomains));
+        $configRepository = $this->getMockBuilder(ConfigRepository::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $configRepository
+            ->expects($this->atLeastOnce())
+            ->method('getAsArray')
+            ->willReturn($blockedDomains);
+
+        $validator = new EmailDomainValidator($configRepository);
 
         $context = $this->getMockBuilder(ExecutionContextInterface::class)->getMock();
 
@@ -46,39 +55,43 @@ class EmailDomainValidatorTest extends ConstraintValidatorTestCase
         $validator->validateinContext('obbyto@yahmo.com', $constraint, $context);
     }
 
-    public function getConfigRepository(array $blockedDomains = []): ConfigRepository
+    protected function createValidator(): ConstraintValidatorInterface
     {
         $configRepository = $this->getMockBuilder(ConfigRepository::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $configRepository->method('getAsArray')
+        $configRepository
+            ->expects($this->never())
+            ->method('getAsArray')
+            ->willReturn($this->blockedDomains);
+
+        return new EmailDomainValidator($configRepository);
+    }
+
+    private function useStrictRepository(array $blockedDomains = []): void
+    {
+        $configRepository = $this->getMockBuilder(ConfigRepository::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $configRepository->expects($this->atLeastOnce())
+            ->method('getAsArray')
+            ->with('blocked_domains')
             ->willReturn($blockedDomains);
 
-        return $configRepository;
-    }
-
-    protected function createValidator(): ConstraintValidatorInterface
-    {
-        return new EmailDomainValidator($this->getConfigRepository($this->blockedDomains));
-    }
-
-    /**
-     * Rebuilds $this->validator and re-initializes it with a fresh context,
-     * using new mock blockedDomains for this specific test.
-     */
-    private function useBlockedDomains(array $blockedDomains): void
-    {
-        $this->blockedDomains = $blockedDomains;
-        $this->validator = $this->createValidator();
-        $this->validator->initialize($this->context);
+        $this->validator = new EmailDomainValidator($configRepository);
     }
 
     public function testBlockedDomainRaisesViolation(): void
     {
         $constraint = new EmailDomain(['yahmo.com']);
-
-        $this->validator->validate('obbyto@yahmo.com', $constraint);
+        $this->useStrictRepository();
+        $this->validator->validateInContext(
+            'obbyto@yahmo.com',
+            $constraint,
+            $this->context
+        );
 
         $this->buildViolation($constraint->message)
             ->setParameter('{{ value }}', 'obbyto@yahmo.com')
@@ -87,15 +100,19 @@ class EmailDomainValidatorTest extends ConstraintValidatorTestCase
 
     public function testAllowedDomainIsValid(): void
     {
-        $this->validator->validate('user@allowed.com', new EmailDomain(['yahmo.com']));
+        $this->useStrictRepository();
+        $this->validator->validateInContext(
+            'user@allowed.com', new EmailDomain(['yahmo.com']),
+            $this->context
+        );
         $this->assertNoViolation();
     }
 
     public function testBlockedDomainFromDatabase()
     {
         $constraint = new EmailDomain([]);
-        $this->useBlockedDomains(['yahmo.com']);
-        $this->validator->validate('obbyto@yahmo.com', $constraint);
+        $this->useStrictRepository(['yahmo.com']);
+        $this->validator->validateInContext('obbyto@yahmo.com', $constraint, $this->context);
 
         $this->buildViolation($constraint->message)
             ->setParameter('{{ value }}', 'obbyto@yahmo.com')
@@ -105,8 +122,15 @@ class EmailDomainValidatorTest extends ConstraintValidatorTestCase
     public function testAllowedDomainFromDatabase()
     {
         $constraint = new EmailDomain([]);
-        $this->useBlockedDomains([]);
-        $this->validator->validate('obbyto@yahmo.com', $constraint);
+        $this->useStrictRepository([]);
+        $this->validator->validateInContext('obbyto@yahmo.com', $constraint, $this->context);
+
+        $this->assertNoViolation();
+    }
+
+    public function testEmptyValueSkipsValidationAndRepository(): void
+    {
+        $this->validator->validateInContext('', new EmailDomain(['yahmo.com']), $this->context);
 
         $this->assertNoViolation();
     }

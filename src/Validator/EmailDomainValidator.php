@@ -3,14 +3,18 @@
 namespace App\Validator;
 
 use App\Repository\ConfigRepository;
-use Exception;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 final class EmailDomainValidator extends ConstraintValidator
 {
-    public function __construct(protected ConfigRepository $configRepository)
+    private array $globalBlockedDomainsList;
+    private ConfigRepository $configRepository;
+
+    public function __construct(ConfigRepository $configRepository, string $globalBlockedDomains = '')
     {
+        $this->configRepository = $configRepository;
+        $this->globalBlockedDomainsList = explode(',', $globalBlockedDomains);
     }
 
     public function validate(mixed $value, Constraint $constraint): void
@@ -23,7 +27,8 @@ final class EmailDomainValidator extends ConstraintValidator
 
         $blockedDomains = array_merge(
             $constraint->blockedDomains,
-            $this->configRepository->getAsArray('blockedDomain')
+            $this->configRepository->getAsArray('blocked_domains'),
+            $this->globalBlockedDomainsList
         );
 
         $domain = substr($value, strpos($value, '@') + 1);
