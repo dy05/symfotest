@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\InvitationCodeRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -26,7 +27,7 @@ class InvitationCode
     private ?string $code = null;
 
     #[ORM\Column]
-    private ?\DateTime $expired_at = null;
+    private ?DateTime $expired_at = null;
 
     public function getId(): ?int
     {
@@ -57,12 +58,12 @@ class InvitationCode
         return $this;
     }
 
-    public function getExpiredAt(): ?\DateTime
+    public function getExpiredAt(): ?DateTime
     {
         return $this->expired_at;
     }
 
-    public function setExpiredAt(\DateTime $expired_at): static
+    public function setExpiredAt(DateTime $expired_at): static
     {
         $this->expired_at = $expired_at;
 

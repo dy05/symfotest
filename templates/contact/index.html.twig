@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ContactController!{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Contact Us</h1>
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+
+{#    <form action="" method="POST">#}
+{#        <div>#}
+{#            <label for="name">#}
+{#                Your name#}
+{#            </label>#}
+
+{#            <input type="text" name="name" id="name" required />#}
+{#        </div>#}
+
+{#        <br/>#}
+
+{#        <button type="submit">#}
+{#            Envoyer#}
+{#        </button>#}
+{#    </form>#}
+    {{ form_start(form) }}
+
+    <div class="row">
+        <div class="col-md-6">
+            {{ form_row(form.name, {label: 'Your name'}) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.email, {label: 'Your email'}) }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            {{ form_row(form.phone, {label: 'Your phone number'}) }}
+        </div>
+    </div>
+
+    <div class="row">
+        {{ form_row(form.message, {label: 'Your message'}) }}
+    </div>
+
+    <div class="row">
+        {{ form_row(form.rgpd, {label: 'Accept cgu'}) }}
+    </div>
+
+    <div class="row">
+        <button type="submit" class="btn btn-primary">
+            Submit
+        </button>
+    </div>
+
+    {{ form_end(form) }}
+</div>
+{% endblock %}

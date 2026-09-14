@@ -58,6 +58,7 @@ class SecurityControllerTest extends WebTestCase
 
         $client->submit($form);
         */
+        $client->request('GET', '/');
 
         $container = static::getContainer();
         $csrfToken = $container->get('security.csrf.token_generator')->generateToken();
@@ -76,11 +77,6 @@ class SecurityControllerTest extends WebTestCase
             ]
          );
 
-        $flashMessages = $client
-            ->getRequest()
-            ->getSession();
-
-        dump($flashMessages);
         $this->assertResponseRedirects('/auth');
 //        $client->followRedirect();
 //        $this->assertSelectorExists('.alert.alert-success');

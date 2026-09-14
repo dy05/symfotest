@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ContactController!{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Contact Us</h1>
+
+    <contact-form url="{{ path('app_contact_post_ajax') }}" />
+</div>
+{% endblock %}

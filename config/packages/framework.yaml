@@ -16,6 +16,13 @@ when@test:
         profiler:
             collect: true
             only_exceptions: false
+        exceptions:
+            Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException:
+                log_level: !php/const Psr\Log\LogLevel::INFO
+                status_code: 403
+            Symfony\Component\HttpKernel\Exception\NotFoundHttpException:
+                log_level: !php/const Psr\Log\LogLevel::INFO
+                status_code: 404
     liip_test_fixtures:
         cache_db:
             sqlite: 'Liip\TestFixturesBundle\Services\DatabaseBackup\SqliteDatabaseBackup'
