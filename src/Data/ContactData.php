@@ -11,7 +11,7 @@ class ContactData
     public ?string $name = null;
 
     #[Assert\NotBlank(message: 'Please enter your email address.')]
-    #[Assert\Length(min: 60, max: 100)]
+    #[Assert\Length(max: 100)]
     #[Assert\Email(message: 'Please enter a valid email address.')]
     public ?string $email = null;
 

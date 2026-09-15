@@ -37,7 +37,7 @@ class ContactControllerWithJsTest extends PantherTestCase
         $client->getWebDriver()
             ->findElement(WebDriverBy::name('rgpd'))->click();
         $client->submit($form);
-        $client->waitFor('.invalid-feedback', 3);
+        $client->waitFor('.invalid-feedback', 1);
         $this->assertSelectorTextContains('.invalid-feedback', 'This value is not valid email address.');
     }
 

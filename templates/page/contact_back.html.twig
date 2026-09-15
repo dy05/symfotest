@@ -5,14 +5,14 @@
     {% include 'parts/flashes.html.twig' %}
     {{ form_start(form) }}
     <div class="row">
-        <div class="col-md-6">{{ form_row(form.name, {label: 'Votre nom'}) }}</div>
-        <div class="col-md-6">{{ form_row(form.email, {label: 'Votre email'}) }}</div>
+        <div class="col-md-6">{{ form_row(form.name, {label: 'Your name'}) }}</div>
+        <div class="col-md-6">{{ form_row(form.email, {label: 'Your email'}) }}</div>
     </div>
     <div class="row">
-        <div class="col-md-6">{{ form_row(form.phone, {label: 'Votre téléphone'}) }}</div>
+        <div class="col-md-6">{{ form_row(form.phone, {label: 'Your phone number'}) }}</div>
     </div>
-    {{ form_row(form.message, {label: 'Votre message'}) }}
-    {{ form_row(form.rgpd, {label: "Dans le cadre de la réglementation sur la protection des données, j'accepte d'être contacté(e) par email et téléphone."}) }}
+    {{ form_row(form.message, {label: 'Your message'}) }}
+    {{ form_row(form.rgpd, {label: "Please accept conditions."}) }}
     <div class="form-group">
         <button class="btn btn-primary" type="submit">Submit</button>
     </div>

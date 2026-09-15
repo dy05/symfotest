@@ -22,9 +22,35 @@ final class ContactController extends AbstractController
     #[Route('/contact_back', name: 'contact_back')]
     public function index(Request $request, ContactService $service): Response
     {
+        $data = new ContactData();
+        $form = $this->createForm(ContactType::class, $data);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $service->handleForm($data);
+            $this->addFlash(
+                'success',
+                'Your mail successfully sent.'
+            );
+
+            return $this->redirectToRoute('contact_back');
+        }
+
+        return $this->render('page/contact_back.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
+    #[Route('/contact', name: 'contact')]
+    public function contact(Request $request, ContactService $service): Response
+    {
         $messages = [];
         $data = new ContactData();
         $form = $this->createForm(ContactType::class, $data);
+
         if ($request->isXmlHttpRequest()) {
             $json = json_decode($request->getContent(), true);
             $data->email = $json['email'];
@@ -35,8 +61,16 @@ final class ContactController extends AbstractController
             $form->submit($json);
         }
 
-        // $form->handleRequest($request);
+//        $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $service->handleForm($data);
+            $this->addFlash(
+                'success',
+                'Your mail successfully sent.'
+            );
+
+//            return $this->redirectToRoute('contact');
+
             $service->handleForm($data);
             return new JsonResponse([]);
         } elseif ($form->isSubmitted()) {
@@ -49,38 +83,13 @@ final class ContactController extends AbstractController
             }
 
             return new JsonResponse(['errors' => $messages], 400);
-        }
-
-        return $this->render('page/contact_back.html.twig', [
-            'form' => $form->createView()
-        ]);
-    }
-
-    /**
-     * @throws TransportExceptionInterface
-     */
-    #[Route('/contact', name: 'contact')]
-    public function contact(Request $request, ContactService $service): Response
-    {
-        $data = new ContactData();
-        $form = $this->createForm(ContactType::class, $data);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $service->handleForm($data);
-            $this->addFlash(
-                'success',
-                'Your mail successfully sent.'
-            );
-
-            return $this->redirectToRoute('contact');
-
-        } elseif ($form->isSubmitted() && !empty($form->getErrors(false, false))) {
-            $this->addFlash('danger', 'Please check the form below and try again.');
+//        } elseif ($form->isSubmitted() && !empty($form->getErrors(false, false))) {
+//            $this->addFlash('danger', 'Please check the form below and try again.');
         }
 
         return $this->render('page/contact.html.twig', [
             'form' => $form->createView(),
+            'messages' => $messages
         ]);
     }
 
