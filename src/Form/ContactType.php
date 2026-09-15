@@ -38,7 +38,7 @@ class ContactType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => ContactData::class,
-//            'csrf_protection' => false,
+            'csrf_protection' => false,
         ]);
     }
 }

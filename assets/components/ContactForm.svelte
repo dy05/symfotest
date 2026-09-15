@@ -10,7 +10,6 @@
 
     let rgpd = false
     let success = false
-    let error = {}
     let loading = false
     let data = {
         name: '',
@@ -23,7 +22,7 @@
         e.preventDefault()
         errors = {}
         if (rgpd === false) {
-            errors.rgpd = 'Vous devez accepter les conditions d\'utilisation'
+            errors.rgpd = 'Your need to accept rgpd'
             return
         }
         loading = true
@@ -34,7 +33,8 @@
                 name: '',
                 email: '',
                 phone: '',
-                message: ''
+                message: '',
+                rgpd: true,
             }
         } catch (e) {
             if (e.errors) {
@@ -55,29 +55,28 @@
 </script>
 
 {#if success}
-    <div class="alert alert-success">Votre email a bien été envoyé</div>
+    <div class="alert alert-success">Your mail successfully sent.</div>
 {/if}
 
 <form method="post" on:submit={onSubmit}>
     <div class="row">
         <div class="col-md-6">
-            <FormInput required error={errors.name} name="name" label="Votre nom" bind:value={data.name}/>
+            <FormInput required error={errors.name} name="name" label="Your name" bind:value={data.name}/>
         </div>
         <div class="col-md-6">
-            <FormInput required error={errors.email} name="email" label="Votre email" type="text" bind:value={data.email}/>
+            <FormInput required error={errors.email} name="email" label="Your email" type="email" bind:value={data.email}/>
         </div>
     </div>
     <div class="row">
         <div class="col-md-6">
-            <FormInput required error={errors.phone} name="phone" label="Votre téléphone" type="phone"
+            <FormInput required error={errors.phone} name="phone" label="Your phone number" type="phone"
                        bind:value={data.phone}/>
         </div>
     </div>
-    <FormInput required error={errors.message} name="message" label="Votre message" type="textarea"
+    <FormInput required error={errors.message} name="message" label="Your message" type="textarea"
                bind:value={data.message}/>
-    <FormCheckbox name="rgpd" bind:value={rgpd} error={errors.rgpd} on:change={clearError('rgpd')}>
-        Dans le cadre de la réglementation sur la protection des données, j'accepte d'être contacté(e) par email et
-        téléphone.
+    <FormCheckbox name="rgpd" bind:value={rgpd} error={errors.rgpd} on:change={clearError('rgpd')} required>
+        Please accept conditions
     </FormCheckbox>
     <FormButton disabled={loading}>Submit</FormButton>
 </form>

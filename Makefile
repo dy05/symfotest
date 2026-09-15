@@ -1,4 +1,8 @@
 .PHONY: test
 test:
-	#PANTHER_CHROME_BINARY="/bin/chromium" ./bin/phpunit --filter ContactControllerTest
-	./bin/phpunit --filter ContactControllerTest
+	#PANTHER_CHROME_BINARY="./drivers/chromedriver"
+	#PANTHER_NO_HEADLESS=1 ./bin/phpunit --filter ContactControllerWithJsTest
+	./bin/phpunit --filter ContactControllerWithJsTest
+detect:
+	vendor/bin/bdi detect drivers
+

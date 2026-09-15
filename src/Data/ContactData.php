@@ -19,7 +19,7 @@ class ContactData
 //    #[Assert\Length(min: 3, max: 150)]
 //    public ?string $subject = null;
 
-    #[Assert\NotBlank(message: 'Please enter a phone number.')]
+    #[Assert\NotBlank(message: 'Please enter a valid phone number.')]
     #[Assert\Length(exactly: 10)]
     public ?string $phone = null;
 

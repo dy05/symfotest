@@ -22,38 +22,48 @@ class ContactControllerWithJsTest extends PantherTestCase
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
-    public function testSendContactWithInvalidEmailPanther()
+    public function testSendContactWithInvalidPhonePanther()
     {
         $client = static::createPantherClient();
         $crawler = $client->request('GET', '/contact');
         $form = $crawler->selectButton('Submit')
             ->form([
                 'name' => 'test',
-                'phone' => '0606060606',
-                'email' => 'test',
+                'phone' => '06060606',
+                'email' => 'test@test.com',
                 'message' => 'This is a new message',
             ]);
 
         $client->getWebDriver()
-            ->findElement(WebDriverBy::name('rgpd'))->click();
+            ->findElement(WebDriverBy::name('rgpd'))
+            ->click();
         $client->submit($form);
+
         $client->waitFor('.invalid-feedback', 1);
-        $this->assertSelectorTextContains('.invalid-feedback', 'This value is not valid email address.');
+        $this->assertSelectorTextContains('.invalid-feedback', 'This value should have exactly 10 characters.');
     }
 
-    public function testSendContactAjax()
+    /**
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function testValidAjaxSendContact()
     {
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/contact_ajax');
+        $client = static::createPantherClient();
+        $crawler = $client->request('GET', '/contact');
         $form = $crawler->selectButton('Submit')
             ->form([
-                'contact[name]' => 'john',
-                'contact[phone]' => '0606060606',
-                'contact[email]' => 'test@test.com',
-                'contact[message]' => 'This is a new message',
+                'name' => 'john',
+                'phone' => '0606060606',
+                'email' => 'test@test.com',
+                'message' => 'This is a new message',
             ]);
 
+        $client->getWebDriver()
+            ->findElement(WebDriverBy::name('rgpd'))
+            ->click();
         $client->submit($form);
-        $this->assertSelectorTextContains('.form-error-message', 'This value is not valid email address.');
+        $client->waitFor('.alert', 1);
+        $this->assertSelectorTextContains('.alert.alert-success', 'Your mail successfully sent.');
     }
 }

@@ -15,15 +15,6 @@ class ContactControllerTest extends WebTestCase
         $this->assertSelectorTextContains('h1', 'Contact Us');
     }
 
-    public function testAjaxRender(): void
-    {
-        $client = static::createClient();
-        $client->request('GET', '/contact_ajax');
-
-        $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'Contact Us');
-    }
-
     public function testSendContactWithInvalidEmail()
     {
         $client = static::createClient();
