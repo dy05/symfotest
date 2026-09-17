@@ -5,6 +5,8 @@ resources:
                 normalizationContext:
                     groups: ["read:Category"]
             ApiPlatform\Metadata\Get:
+                openapi:
+                    summary: 'hidden'
                 normalizationContext:
                     groups: ["read:Category"]
             ApiPlatform\Metadata\Post:
