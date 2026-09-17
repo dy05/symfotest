@@ -17,7 +17,9 @@ security:
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
         main:
+            pattern: ^/(?!api) # ✅ exclude /api entirely — let the api firewall handle it
             lazy: true
+#            stateless: false
             provider: app_user_provider
             custom_authenticator: App\Security\AppAuthenticator
             logout:
@@ -39,8 +41,47 @@ security:
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
 
+            json_login:
+                check_path:  /auth/login
+                username_path: username
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        api_cookie:
+            pattern: ^/api/cookie
+            stateless: false
+            provider: app_user_provider
+            context: main             # <-- shares the same session/token as "main"
+            custom_authenticator: App\Security\AppAuthenticator
+            json_login:
+                check_path:  /api/cookie/login
+                username_path: username
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        api:
+            provider: app_user_provider
+            pattern: ^/api/
+            stateless: true
+            jwt: ~
+
+            json_login:
+                check_path:  /api/auth
+                username_path: username
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+
     # Note: Only the *first* matching rule is applied
     access_control:
+#        - { path: ^/$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
+#        - { path: ^/docs, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI docs
+#        - { path: ^/contexts, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI contexts
+#        - { path: ^/auth, roles: PUBLIC_ACCESS }
+#        - { path: ^/, roles: IS_AUTHENTICATED_FULLY
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 
@@ -54,3 +95,4 @@ when@test:
                 cost: 4 # Lowest possible value for bcrypt
                 time_cost: 3 # Lowest possible value for argon
                 memory_cost: 10 # Lowest possible value for argon
+

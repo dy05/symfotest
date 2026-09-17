@@ -6,3 +6,7 @@ test:
 detect:
 	vendor/bin/bdi detect drivers
 
+jwt:
+	php bin/console lexik:jwt:generate-keypair
+
+

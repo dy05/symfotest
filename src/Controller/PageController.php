@@ -19,7 +19,7 @@ final class PageController extends AbstractController
         return $this->render('page/index.html.twig');
     }
 
-    #[Route('/auth', name: 'app_auth')]
+    #[Route('/main', name: 'app_auth')]
     #[IsGranted("IS_AUTHENTICATED")]
     public function auth(): Response
     {

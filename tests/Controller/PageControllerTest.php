@@ -31,7 +31,7 @@ class PageControllerTest extends WebTestCase
 //    public function testAuthPageIsRestricted(): void
 //    {
 //        $client = static::createClient();
-//        $client->request('GET', '/auth');
+//        $client->request('GET', '/main');
 //
 //        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
 //    }
@@ -39,7 +39,7 @@ class PageControllerTest extends WebTestCase
     public function testRedirectToLogin(): void
     {
         $client = static::createClient();
-        $client->request('GET', '/auth');
+        $client->request('GET', '/main');
 
         $this->assertResponseRedirects('/login');
     }
@@ -55,7 +55,7 @@ class PageControllerTest extends WebTestCase
 
         $client->loginUser($users['user_test']);
 
-        $client->request('GET', '/auth');
+        $client->request('GET', '/main');
 
         $this->assertResponseIsSuccessful();
     }
