@@ -1,7 +1,22 @@
 api_platform:
     title: Hello API Platform
     version: 1.0.0
+    use_symfony_listeners: true
     defaults:
         stateless: true
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
+        pagination_client_items_per_page: true
+#        pagination_client_enabled: true
+    collection:
+        pagination:
+            items_per_page_parameter_name: itemsPerPage
+#            enabled_parameter_name: pagination
+    formats:
+        jsonld: ['application/ld+json']
+        json: ['application/json']
+    mapping:
+        paths:
+            - "%kernel.project_dir%/src/Entity"
+            - "%kernel.project_dir%/config/api_platform"
+

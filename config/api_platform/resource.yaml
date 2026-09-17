@@ -1,0 +1,98 @@
+resources:
+    App\Entity\Category:
+        operations:
+            ApiPlatform\Metadata\GetCollection:
+                normalizationContext:
+                    groups: ["read:Category"]
+            ApiPlatform\Metadata\Get:
+                normalizationContext:
+                    groups: ["read:Category"]
+            ApiPlatform\Metadata\Post:
+                normalizationContext:
+                    groups: ["read:Category"]
+                denormalizationContext:
+                    groups: ["write:Category"]
+            ApiPlatform\Metadata\Patch:
+                normalizationContext:
+                    groups: ["read:Category"]
+                denormalizationContext:
+                    groups: ["write:Category"]
+            ApiPlatform\Metadata\Delete: ~
+    App\Entity\Post:
+        paginationItemsPerPage: 10
+        paginationMaximumItemsPerPage: 100
+        denormalizationContext:
+            groups: ["write:Post"]
+        operations:
+            count:
+                class: ApiPlatform\Metadata\GetCollection
+                method: GET
+                uriTemplate: /posts/count
+                controller: App\Controller\PostCountController
+#                filters: ['post.boolean_filter']
+                parameters:
+                    isOnline:
+                        description: Filter article if online or no, all by default
+                        castToNativeType: true
+                        schema:
+                            type: boolean
+#                        filter: 'api_platform.doctrine.orm.boolean_filter'
+                paginationEnabled: false
+                openapi:
+                    summary: Count articles
+                    description: Count articles with filter online or no
+                    responses:
+                        200:
+                            description: Ok
+                            content:
+                                "application/ld+json":
+                                    schema:
+                                        type: integer
+                                        example: 3
+                                "application/json":
+                                    schema:
+                                        type: integer
+                                        example: 3
+                read: false
+            ApiPlatform\Metadata\GetCollection:
+#                parameters:
+#                    id:
+#                        filter: 'api_platform.doctrine.orm.search_filter'
+#                        filterContext:
+#                            strategy: 'exact'
+#                    title:
+#                        filter: 'api_platform.doctrine.orm.search_filter'
+#                        filterContext:
+#                            strategy: 'partial'
+                filters: ['post.search_filter']
+                normalizationContext:
+                    groups: ["read:Posts"]
+                    openapi_definition_name: 'Collection'
+            ApiPlatform\Metadata\Get:
+                normalizationContext:
+                    groups: ["read:Posts", "read:Post", "read:Category"]
+                    openapi_definition_name: 'Detail'
+            ApiPlatform\Metadata\Post:
+                validationContext:
+                    groups: ['Default', 'create:Post']
+            ApiPlatform\Metadata\Patch:
+                validationContext:
+                    groups: ['App\Entity\Post', 'validationGroups']
+            ApiPlatform\Metadata\Delete: ~
+            publish:
+                class: ApiPlatform\Metadata\Post
+                method: POST
+                uriTemplate: /posts/{id}/publish
+                controller: App\Controller\PostPublishController
+                deserialize: false
+                openapi:
+                    summary: Publish article
+                    description: Change online article status
+                    requestBody:
+                        content:
+                            - 'application/json':
+                                  schema: []
+#                read: false
+#                write: false
+
+

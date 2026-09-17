@@ -29,3 +29,19 @@ services:
         arguments:
             $globalBlockedDomains: 'obbydev.com,test.com'
 
+    post.search_filter:
+        parent: 'api_platform.doctrine.orm.search_filter'
+        arguments:
+            $properties:
+                id: 'exact'
+                title: 'partial'
+        tags: ['api_platform.filter']
+
+    post.is_online_filter:
+        parent: 'api_platform.doctrine.orm.boolean_filter'
+        arguments:
+            $properties:
+                isOnline: ~
+        tags: ['api_platform.filter']
+
+
