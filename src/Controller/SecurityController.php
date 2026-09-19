@@ -23,7 +23,39 @@ class SecurityController extends AbstractController
     ) {
     }
 
-    #[Route(path: '/auth/login', name: 'api_login', methods: ['POST'])]
+    #[Route(path: '/api/auth/logout', name: 'api_auth_logout')]
+    public function apiAuthLogout(): JsonResponse
+    {
+        return $this->json([
+            'message' => 'User log out successfully.'
+        ]);
+    }
+
+    #[Route(path: '/api/auth/login', name: 'api_auth_login', methods: ['POST'])]
+    public function apiAuthLogin(#[CurrentUser] ?User $user): JsonResponse
+    {
+        if (null === $user) {
+            return $this->json([
+                'error' => 'Invalid credentials'
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
+        return $this->json([
+            'id' => $user->getId(),
+            'username' => $user->getUserIdentifier(),
+            'roles' => $user->getRoles()
+        ]);
+    }
+
+    #[Route(path: '/api/logout', name: 'api_logout')]
+    public function apiLogout(): JsonResponse
+    {
+        return $this->json([
+            'message' => 'User log out successfully.'
+        ]);
+    }
+
+    #[Route(path: '/api/login', name: 'api_login', methods: ['POST'])]
     public function apiLogin(#[CurrentUser] ?User $user): JsonResponse
     {
 //        $user = new User();
@@ -58,22 +90,6 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/api/cookie/login', name: 'api_cookie_login', methods: ['POST'])]
-    public function apiCookieLogin(#[CurrentUser] ?User $user): JsonResponse
-    {
-        if (null === $user) {
-            return $this->json([
-                'error' => 'Invalid credentials'
-            ], Response::HTTP_UNAUTHORIZED);
-        }
-
-        return $this->json([
-            'id' => $user->getId(),
-            'username' => $user->getUserIdentifier(),
-            'roles' => $user->getRoles()
-        ]);
-    }
-
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
@@ -89,7 +105,7 @@ class SecurityController extends AbstractController
         return $this->render('security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
     }
 
-    #[Route(path: '/logout', name: 'app_logout')]
+    #[Route(path: '/logout', name: 'app_logout', methods: ['GET'])]
     public function logout(): void
     {
         throw new LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');

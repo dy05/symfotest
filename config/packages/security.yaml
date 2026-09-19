@@ -42,24 +42,23 @@ security:
             # switch_user: true
 
             json_login:
-                check_path:  /auth/login
+                check_path: /login
                 username_path: username
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
         api_cookie:
-            pattern: ^/api/cookie
-            stateless: false
-            provider: app_user_provider
-            context: main             # <-- shares the same session/token as "main"
-            custom_authenticator: App\Security\AppAuthenticator
+            pattern: ^/api/auth
+            context: main          # <-- shares the same session/token as "main"
             json_login:
-                check_path:  /api/cookie/login
+                check_path: /api/auth/login
                 username_path: username
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            logout:
+                path: /api/auth/logout
 
         api:
             provider: app_user_provider
@@ -68,11 +67,13 @@ security:
             jwt: ~
 
             json_login:
-                check_path:  /api/auth
+                check_path:  /api/login
                 username_path: username
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            logout:
+                path: /api/logout
 
 
     # Note: Only the *first* matching rule is applied

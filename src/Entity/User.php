@@ -34,8 +34,6 @@ use Symfony\Component\Validator\Constraints as Assert;
                             'in' => 'header'
                         ]
                     ]
-//                    'authToken' => []
-//                    'cookieAuth' => []
                 ],
 
             ),
@@ -44,17 +42,24 @@ use Symfony\Component\Validator\Constraints as Assert;
             name: 'me'
         ),
         new Get(
-            uriTemplate: '/cookie/me',
+            uriTemplate: '/auth/me',
             stateless: false,
             controller: AuthController::class,
+            openapi: new Operation(
+                security: [
+                    ['cookieAuth' => []]
+                ]
+            ),
             description: 'Get active user with cookie',
             security: 'is_granted("ROLE_USER")',
             name: 'me cookie'
         ),
         new ApiPost(
-            uriTemplate: '/cookie/login',
-            controller: SecurityController::class . '::apiLogin',
+            uriTemplate: '/auth/login',
+            controller: SecurityController::class . '::apiAuthLogin',
             openapi: new Operation(
+                summary: 'Authenticate User',
+                description: 'Authenticate User',
                 requestBody: new RequestBody(
                     content: new ArrayObject([
                         'application/json' => [
