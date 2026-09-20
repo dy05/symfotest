@@ -75,8 +75,9 @@ resources:
                     groups: ["read:Posts", "read:Post", "read:Category"]
                     openapi_definition_name: 'Detail'
             ApiPlatform\Metadata\Post:
+                processor: App\State\UserOwnerStateProcessor
                 validationContext:
-                    groups: ['Default', 'create:Post']
+                    groups: ['create:Post']
             ApiPlatform\Metadata\Patch:
                 validationContext:
                     groups: ['App\Entity\Post', 'validationGroups']
@@ -96,5 +97,16 @@ resources:
                                   schema: []
 #                read: false
 #                write: false
+
+    App\Entity\Media:
+        paginationItemsPerPage: 10
+        paginationMaximumItemsPerPage: 100
+        operations:
+            ApiPlatform\Metadata\GetCollection:
+            ApiPlatform\Metadata\Get:
+            ApiPlatform\Metadata\Post:
+                processor: App\State\UserOwnerStateProcessor
+            ApiPlatform\Metadata\Patch:
+            ApiPlatform\Metadata\Delete: ~
 
 

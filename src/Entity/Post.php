@@ -4,14 +4,17 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
 use App\Repository\PostRepository;
+use App\Contract\UserOwnedInterface;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
-class Post
+class Post implements UserOwnedInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -20,17 +23,21 @@ class Post
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\Length(min: 5, groups: ['create:Post'])]
-    #[Groups(['read:Posts', 'write:Post'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 5)]
+    #[Groups(['read:Posts', 'write:Post', 'create:Post'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read:Posts', 'write:Post'])]
+    #[Assert\NotBlank]
     #[Assert\Length(min:5, groups: ['update:Post'])]
+    #[Groups(['read:Posts', 'write:Post'])]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['read:Posts', 'write:Post'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 5)]
+    #[Groups(['read:Posts', 'write:Post', 'create:Post'])]
     private ?string $content = null;
 
     #[ORM\Column]
@@ -47,14 +54,27 @@ class Post
     private ?Category $category = null;
 
     #[ORM\Column(options: ["default" => 0])]
-    #[Groups(['read:Posts', 'write:Post'])]
     #[ApiProperty(openapiContext: ['type' => 'boolean'])]
+    #[Groups(['read:Posts', 'write:Post'])]
     private bool $online = false;
+
+    #[ORM\ManyToOne(inversedBy: 'posts')]
+    private ?User $user = null;
+
+    /**
+     * @var Collection<int, Media>
+     */
+    #[ORM\ManyToMany(targetEntity: Media::class, inversedBy: 'posts', cascade: ['persist'])]
+    #[ORM\JoinTable(name: 'post_media')]
+    #[Assert\Valid]
+    #[Groups(['read:Posts', 'read:Post', 'write:Post'])]
+    private Collection $medias;
 
     public function __construct()
     {
         $this->createdAt = new DateTime();
         $this->updatedAt = new DateTime();
+        $this->medias = new ArrayCollection();
     }
 
     public static function validationGroups(self $post): array
@@ -147,6 +167,49 @@ class Post
     public function setOnline(bool $online): static
     {
         $this->online = $online;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Media>
+     */
+    public function getMedias(): Collection
+    {
+        return $this->medias;
+    }
+
+    public function setMedias(?array $medias = []): static
+    {
+        $this->medias = new ArrayCollection($medias ?? []);
+
+        return $this;
+    }
+
+    public function addMedia(Media $media): static
+    {
+        if (!$this->medias->contains($media)) {
+            $this->medias->add($media);
+        }
+
+        return $this;
+    }
+
+    public function removeMedia(Media $media): static
+    {
+        $this->medias->removeElement($media);
 
         return $this;
     }

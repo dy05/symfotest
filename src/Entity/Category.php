@@ -26,8 +26,8 @@ class Category
     /**
      * @var Collection<int, Post>
      */
-    #[Groups(['read:Category:posts'])]
     #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'category')]
+    #[Groups(['read:Category:posts'])]
     private Collection $posts;
 
     public function __construct()
