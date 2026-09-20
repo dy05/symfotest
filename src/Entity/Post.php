@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
+use App\Attribute\ApiAuthGroups;
 use App\Repository\PostRepository;
 use App\Contract\UserOwnedInterface;
 use DateTime;
@@ -14,48 +15,52 @@ use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
+#[ApiAuthGroups([
+    'CAN_EDIT' => 'read:collection:Owner',
+    'ROLE_USER' => 'read:collection:User',
+])]
 class Post implements UserOwnedInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read:Posts'])]
+    #[Groups(['read:collection'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 5)]
-    #[Groups(['read:Posts', 'write:Post', 'create:Post'])]
+    #[Groups(['read:collection', 'write:item', 'create:item'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Assert\Length(min:5, groups: ['update:Post'])]
-    #[Groups(['read:Posts', 'write:Post'])]
+    #[Assert\Length(min:5, groups: ['update:item'])]
+    #[Groups(['read:collection', 'write:item'])]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 5)]
-    #[Groups(['read:Posts', 'write:Post', 'create:Post'])]
+    #[Groups(['read:collection:User', 'write:item', 'create:item'])]
     private ?string $content = null;
 
     #[ORM\Column]
-    #[Groups(['read:Post'])]
+    #[Groups(['read:item', 'read:collection:Owner'])]
     private ?DateTime $createdAt = null;
 
     #[ORM\Column]
     private ?DateTime $updatedAt = null;
 
     #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'posts')]
-    #[Groups(['read:Post', 'write:Post'])]
+    #[Groups(['read:item', 'write:item'])]
     #[ApiProperty(example: '/api/categories/1')]
     #[Assert\Valid]
     private ?Category $category = null;
 
     #[ORM\Column(options: ["default" => 0])]
     #[ApiProperty(openapiContext: ['type' => 'boolean'])]
-    #[Groups(['read:Posts', 'write:Post'])]
+    #[Groups(['read:collection:User', 'write:item'])]
     private bool $online = false;
 
     #[ORM\ManyToOne(inversedBy: 'posts')]
@@ -67,7 +72,7 @@ class Post implements UserOwnedInterface
     #[ORM\ManyToMany(targetEntity: Media::class, inversedBy: 'posts', cascade: ['persist'])]
     #[ORM\JoinTable(name: 'post_media')]
     #[Assert\Valid]
-    #[Groups(['read:Posts', 'read:Post', 'write:Post'])]
+    #[Groups(['read:collection', 'read:item', 'write:item'])]
     private Collection $medias;
 
     public function __construct()
@@ -79,7 +84,7 @@ class Post implements UserOwnedInterface
 
     public static function validationGroups(self $post): array
     {
-        return ['update:Post'];
+        return ['update:item'];
     }
 
     public function getId(): ?int

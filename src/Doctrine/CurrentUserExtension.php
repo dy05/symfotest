@@ -42,6 +42,7 @@ readonly class CurrentUserExtension implements QueryCollectionExtensionInterface
             }
         }
 
+        return;
         /** @var User $user */
         $user = $this->security->getUser();
         $alias = $queryBuilder->getRootAliases()[0];

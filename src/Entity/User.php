@@ -248,7 +248,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         )
     ],
     normalizationContext: [
-        'groups' => ['read:User']
+        'groups' => ['read:item']
     ]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUserInterface
@@ -256,11 +256,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read:User'])]
+    #[Groups(['read:item'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[Groups(['read:User'])]
+    #[Groups(['read:item'])]
     #[Assert\NotBlank]
     #[Assert\Email]
     private ?string $email = null;
@@ -269,7 +269,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
      * @var list<string> The user roles
      */
     #[ORM\Column]
-    #[Groups(['read:User'])]
+    #[Groups(['read:item'])]
     private array $roles = [];
 
     /**

@@ -16,22 +16,22 @@ class Media implements UserOwnedInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read:Media', 'write:Post'])]
+    #[Groups(['read:item', 'write:item'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['read:Media', 'write:Post'])]
+    #[Groups(['read:item', 'write:item'])]
     private ?string $label = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['read:Media', 'write:Post'])]
+    #[Groups(['read:item', 'write:item'])]
     private ?string $content = null;
 
     #[ORM\Column(length: 255, options: ["default" => 'link'])]
     #[Assert\NotBlank]
-    #[Groups(['read:Media', 'write:Post'])]
+    #[Groups(['read:item', 'write:item'])]
     private ?string $type = null;
 
     #[ORM\ManyToOne(inversedBy: 'medias')]

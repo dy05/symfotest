@@ -15,11 +15,11 @@ class Category
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read:Category'])]
+    #[Groups(['read:item'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read:Category', 'write:Category', 'write:Post'])]
+    #[Groups(['read:item', 'write:item'])]
     #[Assert\Length(min:3)]
     private ?string $label = null;
 
@@ -27,7 +27,7 @@ class Category
      * @var Collection<int, Post>
      */
     #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'category')]
-    #[Groups(['read:Category:posts'])]
+    #[Groups(['read:item:posts'])]
     private Collection $posts;
 
     public function __construct()

@@ -15,11 +15,11 @@ class UserOwnedDenormalizer implements DenormalizerInterface, DenormalizerAwareI
 {
     use DenormalizerAwareTrait;
 
+    private const string ALREADY_CALLED_DENORMALIZED = 'UserOwnedDenormalizerCalled';
+
     public function __construct(private readonly Security $security)
     {
     }
-
-    private const string ALREADY_CALLED_DENORMALIZED = 'UserOwnedDenormalizerCalled';
 
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {

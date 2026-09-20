@@ -3,30 +3,31 @@ resources:
         operations:
             ApiPlatform\Metadata\GetCollection:
                 normalizationContext:
-                    groups: ["read:Category"]
+                    groups: ["read:item"]
             ApiPlatform\Metadata\Get:
                 openapi:
                     summary: 'hidden'
                 normalizationContext:
-                    groups: ["read:Category"]
+                    groups: ["read:item"]
             ApiPlatform\Metadata\Post:
                 normalizationContext:
-                    groups: ["read:Category"]
+                    groups: ["read:item"]
                 denormalizationContext:
-                    groups: ["write:Category"]
+                    groups: ["write:item"]
             ApiPlatform\Metadata\Patch:
                 normalizationContext:
-                    groups: ["read:Category"]
+                    groups: ["read:item"]
                 denormalizationContext:
-                    groups: ["write:Category"]
+                    groups: ["write:item"]
             ApiPlatform\Metadata\Delete: ~
     App\Entity\Post:
         paginationItemsPerPage: 10
         paginationMaximumItemsPerPage: 100
         denormalizationContext:
-            groups: ["write:Post"]
+            groups: ["write:item"]
         operations:
             count:
+#                security: 'is_granted("CAN_VIEW", "post")'
                 class: ApiPlatform\Metadata\GetCollection
                 method: GET
                 uriTemplate: /posts/count
@@ -57,6 +58,7 @@ resources:
                                         example: 3
                 read: false
             ApiPlatform\Metadata\GetCollection:
+#                provider: App\State\PostCollectionProvider
 #                parameters:
 #                    id:
 #                        filter: 'api_platform.doctrine.orm.search_filter'
@@ -68,22 +70,26 @@ resources:
 #                            strategy: 'partial'
                 filters: ['post.search_filter']
                 normalizationContext:
-                    groups: ["read:Posts"]
+                    groups: ["read:collection"]
                     openapi_definition_name: 'Collection'
             ApiPlatform\Metadata\Get:
+                security: 'is_granted("CAN_VIEW", object)'
                 normalizationContext:
-                    groups: ["read:Posts", "read:Post", "read:Category"]
+                    groups: ["read:collection", "read:item", "read:item"]
                     openapi_definition_name: 'Detail'
             ApiPlatform\Metadata\Post:
+                security: 'is_granted("CAN_EDIT", object)'
                 processor: App\State\UserOwnerStateProcessor
                 validationContext:
-                    groups: ['create:Post']
+                    groups: ['create:item']
             ApiPlatform\Metadata\Patch:
                 validationContext:
                     groups: ['App\Entity\Post', 'validationGroups']
-            ApiPlatform\Metadata\Delete: ~
+            ApiPlatform\Metadata\Delete:
+                security: 'is_granted("CAN_DELETE", object)'
             publish:
                 class: ApiPlatform\Metadata\Post
+                security: 'is_granted("CAN_EDIT", object)'
                 method: POST
                 uriTemplate: /posts/{id}/publish
                 controller: App\Controller\PostPublishController
