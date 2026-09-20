@@ -33,12 +33,12 @@ class OpenApiFactory implements OpenApiFactoryInterface
         );
 
 
-        $schemas = $openApi->getComponents()->getSecuritySchemes();
-        $schemas['cookieAuth'] = new ArrayObject([
-            'type' => 'apiKey',
-            'in' => 'cookie',
-            'name' => 'PHPSESSID'
-        ]);
+//        $schemas = $openApi->getComponents()->getSecuritySchemes();
+//        $schemas['cookieAuth'] = new ArrayObject([
+//            'type' => 'apiKey',
+//            'in' => 'cookie',
+//            'name' => 'PHPSESSID'
+//        ]);
 
 //        $schemas = $openApi->getComponents()->getSchemas();
 //        $schemas['Credentials'] = new ArrayObject([
@@ -83,54 +83,69 @@ class OpenApiFactory implements OpenApiFactoryInterface
 //            )
 //        );
 //        $openApi->getPaths()->addPath('/api/auth/login', $pathItem);
-
-        $pathItem = new PathItem(
-            post: new Operation(
-                operationId: 'postApiLogout',
-                tags: ['User'],
-                responses: [
-                    '200' => new Response(
-                        description: 'Unauthenticate user',
-                        content: new ArrayObject([
-                            'application/json' => [],
-                            'application/ld+json' => [],
-                        ])
+//
+//        $pathItem = new PathItem(
+//            post: new Operation(
+//                operationId: 'postApiLogout',
+//                tags: ['User'],
+//                responses: [
+//                    '200' => new Response(
+//                        description: 'Unauthenticate user',
 //                        content: new ArrayObject([
-//                            'application/json' => [
-//                                'schema' => new ArrayObject([
-//                                    'type' => 'object',
-//                                    'properties' => [
-//                                        'message' => [
-//                                            'type' => 'string',
-//                                            'example' => 'User logout successfully.'
-//                                        ]
-//                                    ]
-//                                ])
-//                            ],
-//                            'application/ld+json' => [
-//                                'schema' => new ArrayObject([
-//                                    'type' => 'object',
-//                                    'properties' => [
-//                                        'message' => [
-//                                            'type' => 'string',
-//                                            'example' => 'User logout successfully.'
-//                                        ]
-//                                    ]
-//                                ])
-//                            ]
+//                            'application/json' => [],
+//                            'application/ld+json' => [],
 //                        ])
-                    )
-                ],
-                requestBody: new RequestBody(
-                    content: new ArrayObject([
-                        'application/json' => [],
-                        'application/ld+json' => []
-                    ])
-                )
+////                        content: new ArrayObject([
+////                            'application/json' => [
+////                                'schema' => new ArrayObject([
+////                                    'type' => 'object',
+////                                    'properties' => [
+////                                        'message' => [
+////                                            'type' => 'string',
+////                                            'example' => 'User logout successfully.'
+////                                        ]
+////                                    ]
+////                                ])
+////                            ],
+////                            'application/ld+json' => [
+////                                'schema' => new ArrayObject([
+////                                    'type' => 'object',
+////                                    'properties' => [
+////                                        'message' => [
+////                                            'type' => 'string',
+////                                            'example' => 'User logout successfully.'
+////                                        ]
+////                                    ]
+////                                ])
+////                            ]
+////                        ])
+//                    )
+//                ],
+//                requestBody: new RequestBody(
+//                    content: new ArrayObject([
+//                        'application/json' => [],
+//                        'application/ld+json' => []
+//                    ])
+//                )
+//
+//            )
+//        );
+//
+//        $openApi->getPaths()->addPath('/api/auth/logout', $pathItem);
 
-            )
-        );
-        $openApi->getPaths()->addPath('/api/auth/logout', $pathItem);
+//        $pathItem = $openApi->getPaths()->getPath('/api/auth/login');
+//
+//        if ($pathItem && $post = $pathItem->getPost()) {
+//            $responses = $post->getResponses();
+//
+//            // keep only the ones you actually want
+//            $responses = array_intersect_key($responses, ['200' => true, '401' => true]);
+//
+//            $openApi->getPaths()->addPath(
+//                '/api/auth/login',
+//                $pathItem->withPost($post->withResponses($responses))
+//            );
+//        }
 
         return $openApi;
     }

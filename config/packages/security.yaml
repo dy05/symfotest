@@ -10,7 +10,9 @@ security:
             entity:
                 class: App\Entity\User
                 property: email
-
+#        jwt:
+#            lexik_jwt:
+#                class: App\Entity\User
     firewalls:
         dev:
             # Ensure dev tools and static assets are always allowed
@@ -50,6 +52,7 @@ security:
 
         api_cookie:
             pattern: ^/api/auth
+            provider: app_user_provider
             context: main          # <-- shares the same session/token as "main"
             json_login:
                 check_path: /api/auth/login
@@ -61,10 +64,13 @@ security:
                 path: /api/auth/logout
 
         api:
-            provider: app_user_provider
             pattern: ^/api/
             stateless: true
+            provider: app_user_provider
             jwt: ~
+#            provider: jwt
+#            jwt:
+#                authenticator: app.jwt
 
             json_login:
                 check_path:  /api/login
@@ -72,8 +78,6 @@ security:
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-            logout:
-                path: /api/logout
 
 
     # Note: Only the *first* matching rule is applied

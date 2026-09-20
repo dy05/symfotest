@@ -47,14 +47,6 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/api/logout', name: 'api_logout')]
-    public function apiLogout(): JsonResponse
-    {
-        return $this->json([
-            'message' => 'User log out successfully.'
-        ]);
-    }
-
     #[Route(path: '/api/login', name: 'api_login', methods: ['POST'])]
     public function apiLogin(#[CurrentUser] ?User $user): JsonResponse
     {

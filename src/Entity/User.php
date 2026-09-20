@@ -7,11 +7,13 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post as ApiPost;
 use ApiPlatform\OpenApi\Model\Operation;
 use ApiPlatform\OpenApi\Model\RequestBody;
+use ApiPlatform\OpenApi\Model\Response;
 use App\Controller\AuthController;
 use App\Controller\SecurityController;
 use App\Repository\UserRepository;
 use ArrayObject;
 use Doctrine\ORM\Mapping as ORM;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -25,6 +27,12 @@ use Symfony\Component\Validator\Constraints as Assert;
             uriTemplate: '/user/me',
             controller: AuthController::class,
             openapi: new Operation(
+                requestBody: new RequestBody(
+                    content: new ArrayObject([
+                        'application/json' => [],
+                        'application/ld+json' => []
+                    ])
+                ),
                 security: [
                     [
                         'JWT' => [
@@ -35,10 +43,11 @@ use Symfony\Component\Validator\Constraints as Assert;
                         ]
                     ]
                 ],
-
             ),
+            exceptionToStatus: [],
             description: 'Get active user',
             security: 'is_granted("ROLE_USER")',
+            read: false,
             name: 'me'
         ),
         new Get(
@@ -46,18 +55,84 @@ use Symfony\Component\Validator\Constraints as Assert;
             stateless: false,
             controller: AuthController::class,
             openapi: new Operation(
+                summary: 'Get active user with cookie',
+                description: 'Get active user with cookie',
+
+                requestBody: new RequestBody(
+                    content: new ArrayObject([
+                        'application/json' => [],
+                        'application/ld+json' => []
+                    ])
+                ),
                 security: [
                     ['cookieAuth' => []]
                 ]
             ),
             description: 'Get active user with cookie',
             security: 'is_granted("ROLE_USER")',
+            read: false,
             name: 'me cookie'
         ),
         new ApiPost(
             uriTemplate: '/auth/login',
+            status: 200,
             controller: SecurityController::class . '::apiAuthLogin',
+            hydraContext: [],
             openapi: new Operation(
+                responses: [
+                    '200'  => new Response(
+                        content: new ArrayObject([
+                            'application/json' => [
+                                'schema' => new ArrayObject([
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'token' => [
+                                            'type' => 'string',
+                                            'readonly' => true
+                                        ]
+                                    ]
+                                ])
+                            ],
+                            'application/ld+json' => [
+                                'schema' => new ArrayObject([
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'token' => [
+                                            'type' => 'string',
+                                            'readonly' => true
+                                        ]
+                                    ]
+                                ])
+                            ]
+                        ])
+                    ),
+                    '401'  => new Response(
+                        content: new ArrayObject([
+                            'application/json' => [
+                                'schema' => new ArrayObject([
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'message' => [
+                                            'type' => 'string',
+                                            'readonly' => true
+                                        ]
+                                    ]
+                                ])
+                            ],
+                            'application/ld+json' => [
+                                'schema' => new ArrayObject([
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'message' => [
+                                            'type' => 'string',
+                                            'readonly' => true
+                                        ]
+                                    ]
+                                ])
+                            ]
+                        ])
+                    ),
+                ],
                 summary: 'Authenticate User',
                 description: 'Authenticate User',
                 requestBody: new RequestBody(
@@ -89,8 +164,9 @@ use Symfony\Component\Validator\Constraints as Assert;
                             ]
                         ]
                     ])
-                )
+                ),
             ),
+            errors: [],
             description: 'Login user',
             read: false,
             name: 'login'
@@ -110,13 +186,41 @@ use Symfony\Component\Validator\Constraints as Assert;
 //                    default: 'password'
 //                ),
 //            ]
+        ),
+        new ApiPost(
+            uriTemplate: '/auth/logout',
+            status: 204,
+            controller: SecurityController::class . '::apiAuthLogout',
+            hydraContext: [],
+            openapi: new Operation(
+                responses: [
+                    '204'  => new Response(
+                        content: new ArrayObject([
+                            'application/json' => [],
+                            'application/ld+json' => []
+                        ])
+                    ),
+                ],
+                summary: 'Log out User',
+                description: 'Log out User',
+                requestBody: new RequestBody(
+                    content: new ArrayObject([
+                        'application/json' => [],
+                        'application/ld+json' => []
+                    ])
+                ),
+            ),
+            errors: [],
+            description: 'Logout user',
+            read: false,
+            name: 'logout'
         )
     ],
     normalizationContext: [
         'groups' => ['read:User']
     ]
 )]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -207,6 +311,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
     /**
      * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
      */
@@ -216,5 +327,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
 
         return $data;
+    }
+
+    public static function createFromPayload($username, array $payload): User|JWTUserInterface
+    {
+//        return new self(
+//            $username,
+//            $payload['roles'],
+//            $payload['username']
+//        );
+        $user = new self();
+//        $id = (int) $username;
+//        if ($id > 0) {
+//            $user->setId($id);
+//            if ($email = ($payload['email'] ?? null)) {
+//                $user->setEmail($email);
+//            }
+//            $user->setRoles($payload['roles'] ?? []);
+//        } else {
+//            $user->setEmail($username);
+//        }
+        $user->setEmail($username);
+
+        return $user;
     }
 }

@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[AsController]
 class AuthController
@@ -15,10 +16,8 @@ class AuthController
     ) {
     }
 
-    public function __invoke(): ?User
+    public function __invoke(): null|UserInterface|User
     {
-        /** @var User $user */
-        $user = $this->security->getUser();
-        return $user;
+        return $this->security->getUser();
     }
 }
