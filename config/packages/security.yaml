@@ -7,9 +7,15 @@ security:
     providers:
         # used to reload user from session & other features (e.g. switch_user)
         app_user_provider:
-            entity:
-                class: App\Entity\User
-                property: email
+            id: App\Security\AppUserProvider
+#            entity:
+#                class: App\Entity\User
+#                property: id
+
+#        user_jwt_provider:
+#            entity:
+#                class: App\Entity\User
+#                property: id
 #        jwt:
 #            lexik_jwt:
 #                class: App\Entity\User
@@ -53,6 +59,10 @@ security:
         api_cookie:
             pattern: ^/api/auth
             provider: app_user_provider
+            jwt: ~
+#            jwt:
+#                provider: user_jwt_provider
+##                authenticator: app.jwt
             context: main          # <-- shares the same session/token as "main"
             json_login:
                 check_path: /api/auth/login
@@ -67,10 +77,16 @@ security:
             pattern: ^/api/
             stateless: true
             provider: app_user_provider
-            jwt: ~
+            entry_point: jwt
 #            provider: jwt
+            jwt: ~
 #            jwt:
-#                authenticator: app.jwt
+#                provider: user_jwt_provider
+##                authenticator: app.jwt
+            refresh_jwt:
+                check_path: /api/token/refresh # or, you may use the `api_refresh_token` route name
+                # or if you have more than one user provider
+                provider: app_user_provider
 
             json_login:
                 check_path:  /api/login
@@ -82,6 +98,7 @@ security:
 
     # Note: Only the *first* matching rule is applied
     access_control:
+        - { path: ^/api/(login|token/refresh), roles: PUBLIC_ACCESS }
 #        - { path: ^/$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
 #        - { path: ^/docs, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI docs
 #        - { path: ^/contexts, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI contexts

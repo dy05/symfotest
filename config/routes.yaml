@@ -10,7 +10,10 @@
 controllers:
     resource: routing.controllers
 
-auth:
-    path: /api/auth
-    methods: ["POST"]
+#auth:
+#    path: /api/login
+#    methods: ["POST"]
+
+api_refresh_token:
+    path: /api/token/refresh
 

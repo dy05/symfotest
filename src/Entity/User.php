@@ -271,7 +271,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string) $this->id;
     }
 
     /**

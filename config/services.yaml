@@ -55,6 +55,6 @@ services:
 #    app.jwt:
 #        class: App\Security\AppJWTAuthenticator
 #        parent: lexik_jwt_authentication.security.jwt_authenticator
-#
+
 
 

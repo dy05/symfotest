@@ -1,0 +1,7 @@
+gesdinet_jwt_refresh_token:
+    refresh_token_class: App\Entity\RefreshToken
+    ttl_update: true
+    max_tokens_per_user: 1
+#    ttl: 2592000 #One month
+#    token_parameter_name: refreshToken
+
