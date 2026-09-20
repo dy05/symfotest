@@ -45,10 +45,42 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
             ),
             exceptionToStatus: [],
+            errors: [],
             description: 'Get active user',
             security: 'is_granted("ROLE_USER")',
             read: false,
             name: 'me'
+        ),
+        new Get(
+            uriTemplate: '/custom/me',
+            controller: AuthController::class,
+            openapi: new Operation(
+                summary: 'Get active user with apiKey',
+                description: 'Get active user with apiKey',
+                requestBody: new RequestBody(
+                    content: new ArrayObject([
+                        'application/json' => [],
+                        'application/ld+json' => []
+                    ])
+                ),
+                security: [
+                    [
+//                        'apiKey' => []
+                        'JWT' => [
+                            'name' => 'Authorization',
+                            'schema' => 'Bearer',
+                            'type' => 'header',
+                            'in' => 'header'
+                        ]
+                    ]
+                ],
+            ),
+            exceptionToStatus: [],
+            errors: [],
+            description: 'Get active user with apiKey',
+            security: 'is_granted("ROLE_USER")',
+            read: false,
+            name: 'custom_me'
         ),
         new Get(
             uriTemplate: '/auth/me',
@@ -63,10 +95,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                         'application/json' => [],
                         'application/ld+json' => []
                     ])
-                ),
-                security: [
-                    ['cookieAuth' => []]
-                ]
+                )
             ),
             description: 'Get active user with cookie',
             security: 'is_granted("ROLE_USER")',
@@ -247,6 +276,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
     #[ORM\Column]
     private ?string $password = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $apiKey = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -350,5 +382,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
         $user->setEmail($username);
 
         return $user;
+    }
+
+    public function getApiKey(): ?string
+    {
+        return $this->apiKey;
+    }
+
+    public function setApiKey(?string $apiKey): static
+    {
+        $this->apiKey = $apiKey;
+
+        return $this;
     }
 }

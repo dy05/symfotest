@@ -33,6 +33,20 @@ class OpenApiFactory implements OpenApiFactoryInterface
         );
 
 
+//        // Not work
+//        $securitySchemes = $openApi->getComponents()->getSecuritySchemes() ?: new ArrayObject();
+//        $securitySchemes['apiKey'] = new ArrayObject([
+//            'type' => 'header',
+//            'scheme' => 'Bearer',
+//            'in' => 'header',
+//            'name' => 'Authorization'
+//        ]);
+//
+//        $openApi = $openApi->withComponents(
+//            $openApi->getComponents()->withSecuritySchemes($securitySchemes)
+//        );
+
+
 //        $schemas = $openApi->getComponents()->getSecuritySchemes();
 //        $schemas['cookieAuth'] = new ArrayObject([
 //            'type' => 'apiKey',
