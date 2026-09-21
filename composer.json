@@ -35,11 +35,13 @@
         "symfony/webpack-encore-bundle": "^2.4",
         "symfony/yaml": "8.1.*",
         "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0"
+        "twig/twig": "^2.12|^3.0",
+        "vich/uploader-bundle": "^3.0"
     },
     "require-dev": {
         "dbrekelmans/bdi": "^1.4",
         "doctrine/doctrine-fixtures-bundle": "^4.3",
+        "justinrainbow/json-schema": "^6.12",
         "liip/test-fixtures-bundle": "^3.9",
         "phpunit/phpunit": "^13.3",
         "symfony/browser-kit": "8.1.*",

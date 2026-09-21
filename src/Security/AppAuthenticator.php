@@ -63,7 +63,7 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
         if ((in_array('application/json', $request->getAcceptableContentTypes())
                 || in_array('application/ld+json', $request->getAcceptableContentTypes()))
             && $authException) {
-            return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+            return new JsonResponse(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
 
         $url = $this->getLoginUrl($request);

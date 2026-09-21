@@ -23,6 +23,10 @@ class UserOwnedDenormalizer implements DenormalizerInterface, DenormalizerAwareI
 
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
+        if (empty($data['medias'])) {
+            $data['medias'] = [];
+        }
+
         $data[static::ALREADY_CALLED_DENORMALIZED] = true;
         $obj = $this->denormalizer->denormalize($data, $type, $format, $context);
 
@@ -39,6 +43,10 @@ class UserOwnedDenormalizer implements DenormalizerInterface, DenormalizerAwareI
 
     public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
     {
+        if (empty($data['medias'])) {
+            $data['medias'] = [];
+        }
+
         $alreadyCalled = $data[static::ALREADY_CALLED_DENORMALIZED] ?? false;
         if ($alreadyCalled) {
             return false;

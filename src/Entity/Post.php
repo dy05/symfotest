@@ -11,9 +11,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 #[ApiAuthGroups([
     'CAN_EDIT' => 'read:collection:Owner',
@@ -72,8 +75,31 @@ class Post implements UserOwnedInterface
     #[ORM\ManyToMany(targetEntity: Media::class, inversedBy: 'posts', cascade: ['persist'])]
     #[ORM\JoinTable(name: 'post_media')]
     #[Assert\Valid]
+    #[Assert\IsNull]
     #[Groups(['read:collection', 'read:item', 'write:item'])]
     private Collection $medias;
+
+//    #[ORM\ManyToOne(targetEntity: MediaObject::class)]
+//    #[ORM\JoinColumn(nullable: true)]
+//    #[ApiProperty(types: ['https://schema.org/image'])]
+//    #[Groups(['read:collection', 'read:item', 'write:item'])]
+//    public ?MediaObject $image = null;
+
+    #[ApiProperty(types: ['https://schema.org/contentUrl'])]
+    #[Groups(['read:collection', 'read:item'])]
+    private ?string $contentUrl = null;
+
+    #[Vich\UploadableField(
+        mapping: 'media_object',
+        fileNameProperty: 'filePath',
+    )]
+    #[Groups(['read:collection', 'read:item', 'write:item'])]
+    public ?File $file = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['read:collection', 'read:item'])]
+    public ?string $filePath = null;
+
 
     public function __construct()
     {
@@ -217,5 +243,17 @@ class Post implements UserOwnedInterface
         $this->medias->removeElement($media);
 
         return $this;
+    }
+
+    public function setContentUrl(?string $contentUrl = null): static
+    {
+        $this->contentUrl = $contentUrl;
+
+        return $this;
+    }
+
+    public function getContentUrl(): ?string
+    {
+        return $this->filePath ? '/storage/' . $this->filePath : null;
     }
 }

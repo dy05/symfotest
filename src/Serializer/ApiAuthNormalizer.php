@@ -4,22 +4,20 @@ namespace App\Serializer;
 
 use App\Attribute\ApiAuthGroups;
 use App\Contract\UserOwnedInterface;
-use App\Entity\Post;
-use App\Security\Voter\UserOwnedVoter;
 use ReflectionClass;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class ApiAuthNormalizer implements NormalizerInterface, NormalizerAwareInterface
+class ApiAuthNormalizer implements NormalizerInterface
 {
-    use NormalizerAwareTrait;
+    private const string ALREADY_CALLED_NORMALIZED = 'ApiAuthNormalizerCalled';
 
-    private const string ALREADY_CALLED_NORMALIZED = 'PostApiNormalizerCalled';
-
-    public function __construct(private readonly AuthorizationCheckerInterface $authorizationChecker)
-    {
+    public function __construct(
+        #[Autowire(service: 'api_platform.jsonld.normalizer.item')]
+        private readonly NormalizerInterface $normalizer,
+        private readonly AuthorizationCheckerInterface $authorizationChecker
+    ) {
     }
 
     public function normalize(
@@ -28,7 +26,7 @@ class ApiAuthNormalizer implements NormalizerInterface, NormalizerAwareInterface
         array $context = []
     ): array|string|int|float|bool|\ArrayObject|null
     {
-        $context[static::ALREADY_CALLED_NORMALIZED . '-' . $data->getId()] = true;
+        $context[static::ALREADY_CALLED_NORMALIZED] = true;
 
         $reflectionClass = new ReflectionClass(get_class($data));
         /** @var ApiAuthGroups $apiAuthGroups */
@@ -49,6 +47,12 @@ class ApiAuthNormalizer implements NormalizerInterface, NormalizerAwareInterface
 //        }
 
         $obj = $this->normalizer->normalize($data, $format, $context);
+        $medias = $obj['medias'] ?? [];
+        if (!is_object($medias) && !is_array($medias)) {
+            $medias = [];
+        }
+
+        $obj['medias'] = $medias;
         return $obj;
     }
 
@@ -74,7 +78,7 @@ class ApiAuthNormalizer implements NormalizerInterface, NormalizerAwareInterface
             return false;
         }
 
-        $alreadyCalled = $context[static::ALREADY_CALLED_NORMALIZED . '-' . $data->getId()] ?? false;
+        $alreadyCalled = $context[static::ALREADY_CALLED_NORMALIZED] ?? false;
         if ($alreadyCalled) {
             return false;
         }
