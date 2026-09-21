@@ -29,5 +29,5 @@ yarn-error.log
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
 
-/storage
+/public/storage
 
