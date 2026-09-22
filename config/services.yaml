@@ -59,9 +59,14 @@ services:
     App\State\UserOwnerStateProcessor:
         arguments: ['@api_platform.doctrine.orm.state.persist_processor']
 
+    App\Serializer\MediaObjectNormalizer:
+        tags:
+            - { name: serializer.normalizer, priority: 900 }
+
 
 #    App\Serializer\PostContextBuilder:
 #        decorates: 'api_platform.serializer.context_builder'
+        # arguments: ['@App\Serializer\PostContextBuilder.inner']
 #        autoconfigure: false
 
 

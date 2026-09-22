@@ -75,15 +75,17 @@ resources:
             ApiPlatform\Metadata\Get:
                 security: 'is_granted("CAN_VIEW", object)'
                 normalizationContext:
-                    groups: ["read:collection", "read:item", "read:item"]
+                    groups: ["read:collection", "read:item"]
                     openapi_definition_name: 'Detail'
             ApiPlatform\Metadata\Post:
                 inputFormats:
                     multipart: ['multipart/form-data']
                 security: 'is_granted("ROLE_USER")'
                 processor: App\State\UserOwnerStateProcessor
+                normalizationContext:
+                    groups: ["read:collection", "read:item"]
                 validationContext:
-                    groups: ['create:item']
+                    groups: ['Default', 'create:item']
             ApiPlatform\Metadata\Patch:
                 validationContext:
                     groups: ['App\Entity\Post', 'validationGroups']

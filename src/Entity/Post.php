@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
 use App\Attribute\ApiAuthGroups;
+use App\Contract\HasFileInterface;
 use App\Repository\PostRepository;
 use App\Contract\UserOwnedInterface;
 use DateTime;
@@ -22,7 +23,7 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
     'CAN_EDIT' => 'read:collection:Owner',
     'ROLE_USER' => 'read:collection:User',
 ])]
-class Post implements UserOwnedInterface
+class Post implements UserOwnedInterface, HasFileInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -38,8 +39,8 @@ class Post implements UserOwnedInterface
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Assert\Length(min:5, groups: ['update:item'])]
-    #[Groups(['read:collection', 'write:item'])]
+    #[Assert\Length(min: 5)]
+    #[Groups(['read:collection', 'write:item', 'create:item'])]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -75,7 +76,6 @@ class Post implements UserOwnedInterface
     #[ORM\ManyToMany(targetEntity: Media::class, inversedBy: 'posts', cascade: ['persist'])]
     #[ORM\JoinTable(name: 'post_media')]
     #[Assert\Valid]
-    #[Assert\IsNull]
     #[Groups(['read:collection', 'read:item', 'write:item'])]
     private Collection $medias;
 
@@ -85,20 +85,20 @@ class Post implements UserOwnedInterface
 //    #[Groups(['read:collection', 'read:item', 'write:item'])]
 //    public ?MediaObject $image = null;
 
-    #[ApiProperty(types: ['https://schema.org/contentUrl'])]
-    #[Groups(['read:collection', 'read:item'])]
-    private ?string $contentUrl = null;
+//    #[ApiProperty(types: ['https://schema.org/contentUrl'])]
+//    #[Groups(['read:collection', 'read:item'])]
+//    private ?string $contentUrl = null;
 
     #[Vich\UploadableField(
         mapping: 'media_object',
         fileNameProperty: 'filePath',
     )]
-    #[Groups(['read:collection', 'read:item', 'write:item'])]
-    public ?File $file = null;
+    #[Groups(['write:item'])]
+    private ?File $file = null;
 
     #[ORM\Column(nullable: true)]
     #[Groups(['read:collection', 'read:item'])]
-    public ?string $filePath = null;
+    private ?string $filePath = null;
 
 
     public function __construct()
@@ -110,7 +110,7 @@ class Post implements UserOwnedInterface
 
     public static function validationGroups(self $post): array
     {
-        return ['update:item'];
+        return ['Default', 'update:item'];
     }
 
     public function getId(): ?int
@@ -245,15 +245,25 @@ class Post implements UserOwnedInterface
         return $this;
     }
 
-    public function setContentUrl(?string $contentUrl = null): static
+    public function getFilePath(): ?string
     {
-        $this->contentUrl = $contentUrl;
+        return $this->filePath;
+    }
+
+    public function setFilePath(?string $filePath): static
+    {
+        $this->filePath = $filePath;
 
         return $this;
     }
 
-    public function getContentUrl(): ?string
+    public function getFile(): ?File
     {
-        return $this->filePath ? '/storage/' . $this->filePath : null;
+        return $this->file;
+    }
+
+    public function setFile(?File $file): void
+    {
+        $this->file = $file;
     }
 }

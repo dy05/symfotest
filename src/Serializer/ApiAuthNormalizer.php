@@ -46,14 +46,16 @@ class ApiAuthNormalizer implements NormalizerInterface
 //            $context['groups'][] = 'read:collection:User';
 //        }
 
-        $obj = $this->normalizer->normalize($data, $format, $context);
-        $medias = $obj['medias'] ?? [];
-        if (!is_object($medias) && !is_array($medias)) {
-            $medias = [];
-        }
+        // $obj = $this->normalizer->normalize($data, $format, $context);
+        // $medias = $obj['medias'] ?? [];
+        // if (!is_object($medias) && !is_array($medias)) {
+        //     $medias = [];
+        // }
 
-        $obj['medias'] = $medias;
-        return $obj;
+        // $obj->setMedias($medias);
+        // return $obj;
+
+        return $this->normalizer->normalize($data, $format, $context);
     }
 
     public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool

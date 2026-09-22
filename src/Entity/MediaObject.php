@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model;
+use App\Contract\HasFileInterface;
 use ArrayObject;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
@@ -46,14 +47,10 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
     outputFormats: ['jsonld' => ['application/ld+json']],
     normalizationContext: ['groups' => ['media_object:read']]
 )]
-class MediaObject
+class MediaObject implements HasFileInterface
 {
     #[ORM\Id, ORM\Column, ORM\GeneratedValue]
     private ?int $id = null;
-
-    #[ApiProperty(types: ['https://schema.org/contentUrl'], writable: false)]
-    #[Groups(['media_object:read'])]
-    public ?string $contentUrl = null;
 
     #[Vich\UploadableField(mapping: 'media_object', fileNameProperty: 'filePath')]
     #[Assert\NotNull]
@@ -61,10 +58,24 @@ class MediaObject
 
     #[ApiProperty(writable: false)]
     #[ORM\Column(nullable: true)]
+    #[Groups(['media_object:read'])]
     public ?string $filePath = null;
 
+    #[Groups(['media_object:read'])]
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getFilePath(): ?string
+    {
+        return $this->filePath;
+    }
+
+    public function setFilePath(?string $filePath): static
+    {
+        $this->filePath = $filePath;
+
+        return $this;
     }
 }

@@ -20,7 +20,7 @@ final class UploadedFileDenormalizer implements DenormalizerInterface
     public function getSupportedTypes(?string $format): array
     {
         return [
-            File::class => true,
+            File::class => false,
         ];
     }
 }

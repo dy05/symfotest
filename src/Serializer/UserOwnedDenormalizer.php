@@ -21,14 +21,14 @@ class UserOwnedDenormalizer implements DenormalizerInterface, DenormalizerAwareI
     {
     }
 
-    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
+    public function denormalize(mixed $object, string $type, ?string $format = null, array $context = []): mixed
     {
-        if (empty($data['medias'])) {
-            $data['medias'] = [];
-        }
+        // if (empty($object['medias'])) {
+        //     $object['medias'] = [];
+        // }
 
-        $data[static::ALREADY_CALLED_DENORMALIZED] = true;
-        $obj = $this->denormalizer->denormalize($data, $type, $format, $context);
+        $object[static::ALREADY_CALLED_DENORMALIZED] = true;
+        $obj = $this->denormalizer->denormalize($object, $type, $format, $context);
 
         if ($obj instanceof UserOwnedInterface) {
             $user = $this->security->getUser();
@@ -43,9 +43,9 @@ class UserOwnedDenormalizer implements DenormalizerInterface, DenormalizerAwareI
 
     public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
     {
-        if (empty($data['medias'])) {
-            $data['medias'] = [];
-        }
+        // if (empty($data['medias'])) {
+        //     $data['medias'] = [];
+        // }
 
         $alreadyCalled = $data[static::ALREADY_CALLED_DENORMALIZED] ?? false;
         if ($alreadyCalled) {
