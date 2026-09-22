@@ -21,7 +21,7 @@ class Category
     #[ORM\Column(length: 255)]
     #[Groups(['read:item', 'write:item'])]
     #[Assert\Length(min:3)]
-    private ?string $label = null;
+    private string $label;
 
     /**
      * @var Collection<int, Post>

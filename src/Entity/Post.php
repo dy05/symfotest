@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Metadata\ApiProperty;
 use App\Attribute\ApiAuthGroups;
 use App\Contract\HasFileInterface;
@@ -58,8 +59,11 @@ class Post implements UserOwnedInterface, HasFileInterface
 
     #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'posts')]
     #[Groups(['read:item', 'write:item'])]
-    #[ApiProperty(example: '/api/categories/1')]
     #[Assert\Valid]
+    #[ApiProperty(
+        example: '/api/categories/1',
+        writableLink: false,
+    )]
     private ?Category $category = null;
 
     #[ORM\Column(options: ["default" => 0])]

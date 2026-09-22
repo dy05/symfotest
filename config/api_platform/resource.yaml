@@ -21,6 +21,54 @@ resources:
                     groups: ["write:item"]
             ApiPlatform\Metadata\Delete: ~
     App\Entity\Post:
+        graphQlOperations:
+            ApiPlatform\Metadata\GraphQl\QueryCollection:
+                paginationType: 'page'
+                filters: ['post.search_filter', 'post.is_online_filter', 'post.order_filter']
+                normalizationContext:
+                    groups: ['read:collection']
+
+            ApiPlatform\Metadata\GraphQl\Query:
+                security: 'is_granted("CAN_VIEW", object)'
+                normalizationContext:
+                    groups: ['read:collection', 'read:item']
+
+            create:
+                class: ApiPlatform\Metadata\GraphQl\Mutation
+                security: 'is_granted("ROLE_USER")'
+                processor: App\State\UserOwnerStateProcessor
+                normalizationContext:
+                    groups: ['read:collection', 'read:item']
+                validationContext:
+                    groups: ['Default', 'create:item']
+
+            update:
+                class: ApiPlatform\Metadata\GraphQl\Mutation
+                validationContext:
+                    groups: ['App\Entity\Post', 'validationGroups']
+
+            delete:
+                class: ApiPlatform\Metadata\GraphQl\DeleteMutation
+                security: 'is_granted("CAN_DELETE", object)'
+
+            publish:
+                class: ApiPlatform\Metadata\GraphQl\Mutation
+                security: 'is_granted("CAN_EDIT", object)'
+                resolver: App\Resolver\PostPublishResolver
+                description: 'Change online article status'
+
+            postMaxId:
+                class: ApiPlatform\Metadata\GraphQl\QueryCollection
+                resolver: App\Resolver\PostMaxIdResolver
+                description: 'Get max article id'
+                paginationEnabled: false
+                read: false
+                args:
+                    id:
+                        type: 'Int'
+                        description: 'Only return posts with id less than or equal to this value'
+                        castToNativeType: true
+
         paginationItemsPerPage: 10
         paginationMaximumItemsPerPage: 100
         denormalizationContext:
@@ -68,6 +116,7 @@ resources:
 #                        filter: 'api_platform.doctrine.orm.search_filter'
 #                        filterContext:
 #                            strategy: 'partial'
+                # filters: ['post.search_filter', 'post.order_filter']
                 filters: ['post.search_filter']
                 normalizationContext:
                     groups: ["read:collection"]
@@ -85,13 +134,13 @@ resources:
                 normalizationContext:
                     groups: ["read:collection", "read:item"]
                 validationContext:
-                    groups: ['Default', 'create:item']
+                    groups: ["Default", "create:item"]
             ApiPlatform\Metadata\Patch:
                 validationContext:
-                    groups: ['App\Entity\Post', 'validationGroups']
+                    groups: ["App\\Entity\\Post", "validationGroups"]
             ApiPlatform\Metadata\Delete:
                 security: 'is_granted("CAN_DELETE", object)'
-            publish:
+            publish_http:
                 class: ApiPlatform\Metadata\Post
                 security: 'is_granted("CAN_EDIT", object)'
                 method: POST

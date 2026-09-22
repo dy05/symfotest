@@ -44,6 +44,15 @@ services:
                 isOnline: ~
         tags: ['api_platform.filter']
 
+    post.order_filter:
+        parent: 'api_platform.doctrine.orm.order_filter'
+        arguments:
+            $properties:
+                id: ~
+                title: ~
+                createdAt: ~
+        tags: ['api_platform.filter']
+
     App\OpenApi\OpenApiFactory:
         decorates: 'api_platform.openapi.factory'
         arguments: ['@App\OpenApi\OpenApiFactory.inner']
@@ -69,5 +78,8 @@ services:
         # arguments: ['@App\Serializer\PostContextBuilder.inner']
 #        autoconfigure: false
 
+    App\Resolver\PostMaxIdResolver:
+        tags:
+            - { name: api_platform.graphql.query_resolver }
 
 
